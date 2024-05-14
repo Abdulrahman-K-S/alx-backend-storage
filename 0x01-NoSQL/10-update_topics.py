@@ -13,9 +13,9 @@ def update_topics(mongo_collection, name, topics):
     name.
 
     Arguments:
-        mongo_collection (pymongo Object):
-        name (string):
-        topics (list of strings);
+        mongo_collection (pymongo Object): The mongo collection we'll be updating in.
+        name (string): The name of the school to update it's topics.
+        topics (list of strings): A list of the topics to update in the school.
     '''
     schools = { 'name': name }
     values = { '$set': { 'topics': topics }}
