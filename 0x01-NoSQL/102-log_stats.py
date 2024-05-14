@@ -16,40 +16,36 @@ def log_stats(mongo_collection):
     Arguments:
         mongo_collection (pymongo Object): The mongo DB.
     """
-    result = mongo_collection.count_documents({})
-    print(f"{result} logs")
-    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    print('{} logs'.format(mongo_collection.count_documents({})))
+    print('Methods:')
+    methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
     for method in methods:
-        documents = mongo_collection.count_documents({ "method": method })
-    print("Methods:")
-    print(f"\tmethod {method}: {documents}")
-    status = mongo_collection.count_documents({ "method": "GET",
-                                              "path": "/status" })
-    print(f"{status} status check")
-
-    print("IPs:")
-    first_IPs = mongo_collection.aggregate([
-        { "$group":
-         {
-             "_id": "$ip",
-             "count": { "$sum": 1 }
-         }
-         },
-        { "$sort": { "count": -1 }},
-        { "$limit": 10 },
-        { "$project": {
-            "_id": 0,
-            "ip": "$_id",
-            "count": 1
-        }}
-    ])
-    for ips in first_IPs:
-        count = ips.get("count")
-        ip_address = ips.get("ip")
-        print(f"\t{ip_address}: {count}")
+        req_count = len(list(mongo_collection.find({'method': method})))
+        print('\tmethod {}: {}'.format(method, req_count))
+    status_checks_count = len(list(
+        mongo_collection.find({'method': 'GET', 'path': '/status'})
+    ))
+    print('{} status check'.format(status_checks_count))
+    print('IPs:')
+    request_logs = mongo_collection.aggregate(
+        [
+            {
+                '$group': {'_id': "$ip", 'totalRequests': {'$sum': 1}}
+            },
+            {
+                '$sort': {'totalRequests': -1}
+            },
+            {
+                '$limit': 10
+            },
+        ]
+    )
+    for request_log in request_logs:
+        ip = request_log['_id']
+        ip_requests_count = request_log['totalRequests']
+        print('\t{}: {}'.format(ip, ip_requests_count))
 
 
 if __name__ == "__main__":
-    with MongoClient() as client:
-        collection = client.logs.nginx
-        log_stats(collection)
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    log_stats(client.logs.nginx)
