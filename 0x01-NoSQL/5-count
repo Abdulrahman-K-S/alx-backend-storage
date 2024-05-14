@@ -1,0 +1,3 @@
+// Task 5. Count
+// A sscript that displays the number of documents in the collection `school`
+db.school.count()
