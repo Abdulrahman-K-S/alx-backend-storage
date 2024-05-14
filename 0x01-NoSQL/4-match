@@ -1,0 +1,4 @@
+// Task 4. All matches
+// A script that lists all documents in the collection `school`` with
+// name = 'Holberton School'
+db.school.find({ name: 'Holberton school'})
