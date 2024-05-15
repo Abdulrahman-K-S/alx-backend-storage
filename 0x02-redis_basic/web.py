@@ -25,7 +25,6 @@ def count_requests(method: Callable) -> Callable:
     Return:
         (Callable): The wrapped function.
     """
-
     @wraps(method)
     def wrapper(url):
         """wrapper
