@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
+
 Creating the redis exercise file to address various tasks.
+
 """
 
 import redis
@@ -43,7 +45,8 @@ def call_history(method: Callable) -> Callable:
     """call_history
 
     Everytime the original function will be called, we will add its
-    input parameters to one list in redis, and store its output into another list.
+    input parameters to one list in redis, and store its output into another
+    list.
 
     Arguments:
         method (Callable): The function to call.
@@ -62,7 +65,7 @@ def call_history(method: Callable) -> Callable:
         Arguments:
             *args (tuple): Variable length argument list.
             **kwds (dictionary): Arbitrary keyword arguments.
-    
+
         Return:
             (Callable): The result of invoking the original method.
         """
@@ -96,13 +99,11 @@ def replay(method: Callable) -> None:
         print("{}(*{}) -> {}".format(qualified_name, key, value))
 
 
-
-
 class Cache:
     """Cache
 
     Attributes:
-        _redis: The redis connection and the important part of the Cache class. 
+        _redis: The redis connection and the important part of the Cache class.
     """
 
     def __init__(self):
@@ -119,11 +120,12 @@ class Cache:
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store
 
-        This method generates a random key, stores the input data in Redis using
-        the random key and returns the key.
+        This method generates a random key, stores the input data in Redis
+        using the random key and returns the key.
 
         Arguments
-            data (str/bytes/int/float): The data that will be stored inside redis.
+            data (str/bytes/int/float): The data that will be
+            stored inside redis.
 
         Return:
             (str): The random key generated.
@@ -180,4 +182,3 @@ class Cache:
         except Exception:
             data = 0
         return data
-
