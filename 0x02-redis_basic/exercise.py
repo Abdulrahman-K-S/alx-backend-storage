@@ -96,6 +96,8 @@ def replay(method: Callable) -> None:
         print("{}(*{}) -> {}".format(qualified_name, key, value))
 
 
+
+
 class Cache:
     """Cache
 
