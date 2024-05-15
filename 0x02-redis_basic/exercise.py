@@ -81,7 +81,7 @@ def replay(method: Callable) -> None:
     Arguments:
         method (Callable): The function to call.
     """
-    redis = redis.Redis()
+    redis = method.__self__._redis
     qualified_name = method.__qualname__
     num_of_calls = redis.get(qualified_name).decode("utf-8")
     print("{} was called {} times:".format(qualified_name, num_of_calls))
