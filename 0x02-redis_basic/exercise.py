@@ -81,19 +81,19 @@ def replay(method: Callable) -> None:
     Arguments:
         method (Callable): The function to call.
     """
-    redis = method.__self__._redis
-    qualified_name = method.__qualname__
-    num_of_calls = redis.get(qualified_name).decode("utf-8")
-    print("{} was called {} times:".format(qualified_name, num_of_calls))
-    input_key = qualified_name + ":inputs"
-    output_key = qualified_name + ":outputs"
-    input_list = redis.lrange(input_key, 0, -1)
-    output_list = redis.lrange(output_key, 0, -1)
-    r_zipped = list(zip(input_list, output_list))
-    for key, value in r_zipped:
-        key = key.decode("utf-8")
-        value = value.decode("utf-8")
-        print("{}(*{}) -> {}".format(qualified_name, key, value))
+    method_name = method.__qualname__
+    redis = redis.Redis()
+    input_key = method_name + ":inputs"
+    output_key = method_name + ":outputs"
+    count = redis.get(method_name)
+    if count is not None:
+        count = int(count)
+        IOTuple = zip(redis.lrange(input_key, 0, -1),
+                      redis.lrange(output_key, 0, -1))
+        print(f"{method_name} was called {count} times:")
+        for inp, outp in list(IOTuple):
+            input, output = inp.decode("utf-8"), outp.decode("utf-8")
+            print(f"{method_name}(*{input}) -> {output}")
 
 
 
