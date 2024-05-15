@@ -36,5 +36,5 @@ class Cache:
             (str): The random key generated.
         """
         redisKey = str(uuid4())
-        self._redis.set(redisKey, redisKey)
+        self._redis.set(redisKey, data)
         return redisKey
