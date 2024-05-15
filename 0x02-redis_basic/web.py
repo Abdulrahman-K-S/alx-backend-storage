@@ -33,15 +33,14 @@ def count_requests(method: Callable) -> Callable:
         Arguments:
             url (str): The url passed to get_page.
         """
-        r.incr(f"count:{url}")
-        cached_html = r.get(f"cached:{url}")
-        if cached_html:
-            return cached_html.decode('utf-8')
-
-        html = method(url)
-        r.setex(f"cached:{url}", 10, html)
-        return html
-
+        r.incr(f'count:{url}')
+        result = r.get(f'result:{url}')
+        if result:
+            return result.decode('utf-8')
+        result = method(url)
+        r.set(f'count:{url}', 0)
+        r.setex(f'result:{url}', 10, result)
+        return result
     return wrapper
 
 @count_requests
@@ -54,5 +53,4 @@ def get_page(url: str) -> str:
     Return:
         (str): The chached result.
     """
-    req = requests.get(url)
-    return req.text
+    return requests.get(url).text
