@@ -102,6 +102,7 @@ class Cache:
     Attributes:
         _redis: The redis connection and the important part of the Cache class. 
     """
+
     def __init__(self):
         """__init__
 
