@@ -42,6 +42,7 @@ def count_requests(method: Callable) -> Callable:
         return result
     return wrapper
 
+
 @count_requests
 def get_page(url: str) -> str:
     """get_page
