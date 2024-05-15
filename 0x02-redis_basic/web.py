@@ -46,7 +46,7 @@ def count_requests(method: Callable) -> Callable:
 @count_requests
 def get_page(url: str) -> str:
     """get_page
-    
+
     Arguments:
         url (str): The url to check & track.
 
