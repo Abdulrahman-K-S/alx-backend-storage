@@ -1,17 +1,49 @@
 #!/usr/bin/env python3
 """
-Task 0. Writing strings to Redis
-
-Create a cache class and create it's constructor and store method.
+Creating the redis exercise file to address various tasks.
 """
 
 import redis
 from uuid import uuid4
 from typing import Union, Callable
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """count_calls
+
+    This method counts the number of key every time it's called by
+    the method and returns it's orignal value.
+
+    Arguments:
+        method (Callable): The function to call.
+
+    Return:
+        (Callable): The wrapped function.
+    """
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapper(self, *args, **kwds):
+        """wrapper
+        
+        Arguments:
+            *args (tuple): Variable length argument list.
+            **kwds (dictionary): Arbitrary keyword arguments.
+    
+        Return:
+            (Callable): The result of invoking the original method.
+        """
+        self._redis.incr(key)
+        return method(self, *args, **kwds)
+    return wrapper
 
 
 class Cache:
     """Cache
+
+    Attributes:
+        _redis: The redis connection and the important part of the Cache class. 
     """
     def __init__(self):
         """__init__
@@ -22,7 +54,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store
 
