@@ -24,7 +24,7 @@ def count_calls(method: Callable) -> Callable:
     key = method.__qualname__
 
     @wraps(method)
-    def wrapper(self, *args, **kwds):
+    def wrapper(self, *args, **kwds) -> Callable:
         """wrapper
 
         Arguments:
@@ -73,7 +73,7 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
-def replay(method: Callable):
+def replay(method: Callable) -> None:
     """replay
 
     This function displays the history of calls of a particular function.
