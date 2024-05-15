@@ -87,3 +87,4 @@ class Cache:
         except Exception:
             data = 0
         return data
+
