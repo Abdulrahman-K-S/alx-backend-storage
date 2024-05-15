@@ -83,12 +83,10 @@ def replay(method: Callable) -> None:
     qualified_name = method.__qualname__
     num_of_calls = redis.get(qualified_name).decode("utf-8")
     print("{} was called {} times:".format(qualified_name, num_of_calls))
-
     input_key = qualified_name + ":inputs"
     output_key = qualified_name + ":outputs"
     input_list = redis.lrange(input_key, 0, -1)
     output_list = redis.lrange(output_key, 0, -1)
-
     r_zipped = list(zip(input_list, output_list))
     for key, value in r_zipped:
         key = key.decode("utf-8")
