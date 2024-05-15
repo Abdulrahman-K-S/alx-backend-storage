@@ -26,7 +26,38 @@ def count_calls(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(self, *args, **kwds):
         """wrapper
-        
+
+        Arguments:
+            *args (tuple): Variable length argument list.
+            **kwds (dictionary): Arbitrary keyword arguments.
+
+        Return:
+            (Callable): The result of invoking the original method.
+        """
+        self._redis.incr(key)
+        return method(self, *args, **kwds)
+    return wrapper
+
+def call_history(method: Callable) -> Callable:
+    """call_history
+
+    Everytime the original function will be called, we will add its
+    input parameters to one list in redis, and store its output into another list.
+
+    Arguments:
+        method (Callable): The function to call.
+
+    Return:
+        (Callable): The wrapped function.
+    """
+    qualified_name = method.__qualname__
+    input_key = qualified_name + ":inputs"
+    output_key = qualified_name + ":outputs"
+
+    @wraps(method)
+    def wrapper(self, *args, **kwds):
+        """wrapper
+
         Arguments:
             *args (tuple): Variable length argument list.
             **kwds (dictionary): Arbitrary keyword arguments.
@@ -34,8 +65,10 @@ def count_calls(method: Callable) -> Callable:
         Return:
             (Callable): The result of invoking the original method.
         """
-        self._redis.incr(key)
-        return method(self, *args, **kwds)
+        self._redis.rpush(input_key, str(args))
+        data = method(self, *args, **kwds)
+        self._redis.rpush(output_key, str(data))
+        return data
     return wrapper
 
 
@@ -55,6 +88,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store
 
