@@ -81,23 +81,19 @@ def replay(method: Callable) -> None:
     Arguments:
         method (Callable): The function to call.
     """
-    key = store.__qualname__
-    cache = store.__self__
-    client = cache._redis
-    inp = key + ":inputs"
-    out = key + ":outputs"
-    calls = cache.get_str(client.get(key))
-    inputs = [
-        cache.get_str(input)
-        for input in client.lrange(inp, 0, -1)
-    ]
-    outputs = [
-        cache.get_str(output)
-        for output in client.lrange(out, 0, -1)
-    ]
-    print(f'{key} was called {calls} times:')
-    for input, output in zip(inputs, outputs):
-        print(f'{key}(*{input}) -> {output}')
+    redis = method.__self__._redis
+    qualified_name = method.__qualname__
+    num_of_calls = redis.get(qualified_name).decode("utf-8")
+    print("{} was called {} times:".format(qualified_name, num_of_calls))
+    input_key = qualified_name + ":inputs"
+    output_key = qualified_name + ":outputs"
+    input_list = redis.lrange(input_key, 0, -1)
+    output_list = redis.lrange(output_key, 0, -1)
+    r_zipped = list(zip(input_list, output_list))
+    for key, value in r_zipped:
+        key = key.decode("utf-8")
+        value = value.decode("utf-8")
+        print("{}(*{}) -> {}".format(qualified_name, key, value))
 
 
 
