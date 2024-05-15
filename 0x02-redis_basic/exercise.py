@@ -30,7 +30,7 @@ class Cache:
         the random key and returns the key.
 
         Arguments
-            data ():
+            data (str/bytes/int/float): The data that will be stored inside redis.
 
         Return:
             (str): The random key generated.
